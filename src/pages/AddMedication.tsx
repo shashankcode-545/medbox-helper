@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -14,6 +14,8 @@ import {
 } from '@/components/ui/select';
 import Navbar from '@/components/Navbar';
 import { toast } from 'sonner';
+import { Pill, Clock, Calendar, Trash2, CheckCircle2 } from 'lucide-react';
+import { Separator } from '@/components/ui/separator';
 
 interface Medication {
   id: string;
@@ -77,31 +79,53 @@ const AddMedication: React.FC = () => {
     toast.info('Medication removed.');
   };
 
+  const getFrequencyText = (freq: string) => {
+    const frequencyMap: Record<string, string> = {
+      'once-daily': 'Once Daily',
+      'twice-daily': 'Twice Daily',
+      'three-times-daily': 'Three Times Daily',
+      'four-times-daily': 'Four Times Daily',
+      'as-needed': 'As Needed',
+      'weekly': 'Weekly',
+    };
+    return frequencyMap[freq] || freq;
+  };
+
   return (
     <div className="min-h-screen bg-slate-50">
       <Navbar />
       
       <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6">
-        <h1 className="text-3xl font-bold text-medical-dark-blue mb-8">Add Medication</h1>
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-medical-dark-blue">Add Medication</h1>
+          <p className="text-slate-500 mt-2">Enter medication details for the patient's prescription</p>
+        </div>
         
-        {/* Input Section - Horizontal Layout */}
-        <Card className="mb-8">
+        {/* Input Section - Card with improved styling */}
+        <Card className="mb-8 shadow-sm border-medical-light-blue">
+          <CardHeader className="bg-gradient-to-r from-medical-light-blue to-slate-50 pb-2">
+            <CardTitle className="text-xl text-medical-dark-blue flex items-center">
+              <Pill className="mr-2 h-5 w-5" />
+              New Medication Entry
+            </CardTitle>
+          </CardHeader>
           <CardContent className="pt-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               <div className="space-y-2">
-                <Label htmlFor="name">Medicine Name*</Label>
+                <Label htmlFor="name" className="text-medical-dark-blue">Medicine Name*</Label>
                 <Input 
                   id="name" 
                   value={name} 
                   onChange={(e) => setName(e.target.value)} 
                   placeholder="Enter medicine name"
+                  className="border-slate-300 focus:border-medical-blue focus:ring-medical-light-blue"
                 />
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="frequency">Dosage Frequency*</Label>
+                <Label htmlFor="frequency" className="text-medical-dark-blue">Dosage Frequency*</Label>
                 <Select value={frequency} onValueChange={setFrequency}>
-                  <SelectTrigger id="frequency">
+                  <SelectTrigger id="frequency" className="border-slate-300 focus:border-medical-blue">
                     <SelectValue placeholder="Select frequency" />
                   </SelectTrigger>
                   <SelectContent>
@@ -116,7 +140,7 @@ const AddMedication: React.FC = () => {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="days">Total Days*</Label>
+                <Label htmlFor="days" className="text-medical-dark-blue">Total Days*</Label>
                 <Input 
                   id="days" 
                   type="number"
@@ -124,65 +148,88 @@ const AddMedication: React.FC = () => {
                   value={days} 
                   onChange={(e) => setDays(e.target.value)} 
                   placeholder="Enter number of days"
+                  className="border-slate-300 focus:border-medical-blue focus:ring-medical-light-blue"
                 />
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="instructions">Special Instructions</Label>
+                <Label htmlFor="instructions" className="text-medical-dark-blue">Special Instructions</Label>
                 <Textarea 
                   id="instructions" 
                   value={instructions} 
                   onChange={(e) => setInstructions(e.target.value)} 
                   placeholder="Enter any special instructions"
-                  className="h-24"
+                  className="h-24 border-slate-300 focus:border-medical-blue focus:ring-medical-light-blue"
                 />
               </div>
             </div>
             
             <div className="mt-6 flex justify-end">
-              <Button onClick={handleAddMedication} className="bg-medical-blue hover:bg-medical-dark-blue">
+              <Button 
+                onClick={handleAddMedication} 
+                className="bg-medical-blue hover:bg-medical-dark-blue text-white shadow-sm"
+              >
+                <Pill className="mr-2 h-4 w-4" />
                 Add Medication
               </Button>
             </div>
           </CardContent>
         </Card>
         
-        {/* Medications Display - Vertical Layout */}
+        {/* Medications Display - Improved card design */}
         <div className="space-y-4">
-          <h2 className="text-xl font-semibold text-medical-dark-blue mb-4">Added Medications</h2>
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl font-semibold text-medical-dark-blue flex items-center">
+              <Clock className="mr-2 h-5 w-5" />
+              Added Medications
+            </h2>
+            {medications.length > 0 && (
+              <div className="bg-medical-light-blue text-medical-dark-blue px-3 py-1 rounded-full text-sm font-medium">
+                {medications.length} {medications.length === 1 ? 'medication' : 'medications'} added
+              </div>
+            )}
+          </div>
+          
+          <Separator className="bg-slate-200" />
           
           {medications.length === 0 ? (
-            <div className="text-center p-8 bg-white rounded-lg border border-gray-200">
-              <p className="text-gray-500">No medications added yet.</p>
+            <div className="text-center p-8 bg-white rounded-lg border border-slate-200 shadow-sm">
+              <div className="flex flex-col items-center justify-center text-slate-400">
+                <Pill className="h-12 w-12 mb-3 text-slate-300" />
+                <p className="text-lg font-medium">No medications added yet</p>
+                <p className="text-sm mt-1">Add a new medication using the form above</p>
+              </div>
             </div>
           ) : (
             <div className="grid grid-cols-1 gap-4">
               {medications.map((med) => (
-                <Card key={med.id} className="overflow-hidden">
+                <Card key={med.id} className="overflow-hidden border-l-4 border-l-medical-blue hover:shadow-md transition-shadow duration-200">
                   <CardContent className="p-6">
                     <div className="flex justify-between items-start">
-                      <div>
-                        <h3 className="font-bold text-lg text-medical-blue">{med.name}</h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
-                          <div>
-                            <p className="text-sm font-medium text-gray-500">Frequency</p>
-                            <p className="text-gray-700">
-                              {med.frequency === 'once-daily' && 'Once Daily'}
-                              {med.frequency === 'twice-daily' && 'Twice Daily'}
-                              {med.frequency === 'three-times-daily' && 'Three Times Daily'}
-                              {med.frequency === 'four-times-daily' && 'Four Times Daily'}
-                              {med.frequency === 'as-needed' && 'As Needed'}
-                              {med.frequency === 'weekly' && 'Weekly'}
-                            </p>
+                      <div className="flex-1">
+                        <h3 className="font-bold text-lg text-medical-dark-blue">{med.name}</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-3">
+                          <div className="flex items-center text-slate-700">
+                            <Clock className="h-4 w-4 mr-2 text-medical-blue" />
+                            <div>
+                              <p className="text-sm font-medium text-slate-500">Frequency</p>
+                              <p className="font-medium">{getFrequencyText(med.frequency)}</p>
+                            </div>
                           </div>
-                          <div>
-                            <p className="text-sm font-medium text-gray-500">Duration</p>
-                            <p className="text-gray-700">{med.days} {med.days === 1 ? 'day' : 'days'}</p>
+                          <div className="flex items-center text-slate-700">
+                            <Calendar className="h-4 w-4 mr-2 text-medical-blue" />
+                            <div>
+                              <p className="text-sm font-medium text-slate-500">Duration</p>
+                              <p className="font-medium">{med.days} {med.days === 1 ? 'day' : 'days'}</p>
+                            </div>
                           </div>
                           {med.instructions && (
-                            <div className="md:col-span-2">
-                              <p className="text-sm font-medium text-gray-500">Special Instructions</p>
-                              <p className="text-gray-700">{med.instructions}</p>
+                            <div className="md:col-span-1 flex items-start text-slate-700">
+                              <CheckCircle2 className="h-4 w-4 mr-2 mt-0.5 text-medical-blue" />
+                              <div>
+                                <p className="text-sm font-medium text-slate-500">Instructions</p>
+                                <p className="font-medium">{med.instructions}</p>
+                              </div>
                             </div>
                           )}
                         </div>
@@ -192,7 +239,8 @@ const AddMedication: React.FC = () => {
                         className="text-red-500 hover:text-red-700 hover:bg-red-50"
                         onClick={() => handleRemoveMedication(med.id)}
                       >
-                        Remove
+                        <Trash2 className="h-4 w-4" />
+                        <span className="ml-1 hidden sm:inline">Remove</span>
                       </Button>
                     </div>
                   </CardContent>
@@ -203,7 +251,10 @@ const AddMedication: React.FC = () => {
           
           {medications.length > 0 && (
             <div className="mt-8 flex justify-end">
-              <Button onClick={handleSubmit} className="bg-medical-dark-blue hover:bg-blue-900 px-8">
+              <Button 
+                onClick={handleSubmit} 
+                className="bg-medical-dark-blue hover:bg-blue-900 text-white px-8 shadow-sm"
+              >
                 Submit Medications
               </Button>
             </div>
